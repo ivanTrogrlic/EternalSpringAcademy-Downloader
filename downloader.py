@@ -5,6 +5,7 @@ import time
 import requests
 from fileinput import filename
 from urllib.request import urlopen
+from database import Database
 
 from file_utils import *
 from link_finder import LinkFinder
@@ -13,6 +14,7 @@ OBJAVE = "Objave"
 
 class Downloader:
     base_url = ''
+    database = Database()
 
     def __init__(self, base_url):
         create_project_dir(OBJAVE)
@@ -49,13 +51,10 @@ class Downloader:
             fileName = re.search("(?<=https:\/\/akademijavjecnogproljeca.org\/dudde_poruke\/poruke\/bd_)(.*)(?=\.html)", str(url))
             print("File name", OBJAVE + "/" + str(fileName.group()))
 
-            html_string = ''
             try:
                 response = requests.get(url)
                 html_string = response.text
-                objava = re.search("(?=<div class=\"okvir\">)([\S\s]*?)(?<=<\/div>)", html_string)
-                write_file(OBJAVE + "/" + str(fileName.group()) + ".txt", str(objava.group()))
+                Downloader.database.insert_objava(str(html_string), str(fileName.group()))
                 print("File written")
             except Exception as e:
-                print('Error: cannot read page')
-                print(e)
+                print('Error: cannot read page', e)
