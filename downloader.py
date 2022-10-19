@@ -3,7 +3,6 @@ import re
 import ssl
 import time
 import requests
-from fileinput import filename
 from urllib.request import urlopen
 from database import Database
 
